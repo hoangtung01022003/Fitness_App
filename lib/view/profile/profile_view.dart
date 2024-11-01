@@ -1,3 +1,8 @@
+import 'package:fitness/api/api_service.dart';
+import 'package:fitness/api/sharedPreference.dart';
+import 'package:fitness/common_widget/calculate_age.dart';
+import 'package:fitness/common_widget/values/textArr.dart';
+import 'package:fitness/view/login/login_view.dart';
 import 'package:flutter/material.dart';
 
 import '../../common/colo_extension.dart';
@@ -15,27 +20,54 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   bool positive = false;
+  Textarr textarr = Textarr();
+  final ApiService _apiService = ApiService();
+  String fullName = '';
+  int weight = 0;
+  int height = 0;
+  int age = 0;
 
-  List accountArr = [
-    {"image": "assets/img/p_personal.png", "name": "Personal Data", "tag": "1"},
-    {"image": "assets/img/p_achi.png", "name": "Achievement", "tag": "2"},
-    {
-      "image": "assets/img/p_activity.png",
-      "name": "Activity History",
-      "tag": "3"
-    },
-    {
-      "image": "assets/img/p_workout.png",
-      "name": "Workout Progress",
-      "tag": "4"
+  @override
+  void initState() {
+    super.initState();
+    loadUserData(); // Gọi hàm để tải dữ liệu người dùng
+  }
+
+  // Hàm này sẽ tải dữ liệu người dùng
+  Future<void> loadUserData() async {
+    // Bước 1: Tải dữ liệu từ cache
+    await loadUserInfoFromCache();
+
+    // Bước 2: Nếu không có dữ liệu trong cache, gọi API để tải dữ liệu và lưu vào cache
+    if (fullName.isEmpty) {
+      await SharedPrefService.fetchAndCacheUserInfo(_apiService);
+      await loadUserInfoFromCache(); // Tải lại dữ liệu từ cache sau khi lưu
     }
-  ];
+  }
 
-  List otherArr = [
-    {"image": "assets/img/p_contact.png", "name": "Contact Us", "tag": "5"},
-    {"image": "assets/img/p_privacy.png", "name": "Privacy Policy", "tag": "6"},
-    {"image": "assets/img/p_setting.png", "name": "Setting", "tag": "7"},
-  ];
+  // Hàm để tải thông tin từ cache
+  Future<void> loadUserInfoFromCache() async {
+    try {
+      final cachedUserInfo = await SharedPrefService.getCachedUserInfo();
+      if (cachedUserInfo != null) {
+        setState(() {
+          fullName =
+              '${cachedUserInfo['first_name'] ?? ''} ${cachedUserInfo['last_name'] ?? ''}';
+          
+          height = cachedUserInfo['height'] ?? 0.0;
+          weight = cachedUserInfo['weight'] ?? 0.0;
+          age = calculateAge(cachedUserInfo['date_of_birth'] ?? '');
+          // Các trường khác nếu cần
+        });
+        print("Thông tin người dùng đã được tải từ cache");
+      } else {
+        print("Không có thông tin người dùng trong cache");
+      }
+    } catch (e) {
+      print("Lỗi khi tải thông tin từ cache: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,6 +76,12 @@ class _ProfileViewState extends State<ProfileView> {
         centerTitle: true,
         elevation: 0,
         leadingWidth: 0,
+        // leading: IconButton(
+        //   // icon: Icon(Icons.arrow_back, color: TColor.gray),
+        //   onPressed: () {
+        //     Navigator.pop(context); // Quay lại màn hình trước
+        //   },
+        // ),
         title: Text(
           "Profile",
           style: TextStyle(
@@ -96,7 +134,8 @@ class _ProfileViewState extends State<ProfileView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Stefani Wong",
+                          // ignore: unnecessary_string_interpolations
+                          '$fullName',
                           style: TextStyle(
                             color: TColor.black,
                             fontSize: 14,
@@ -122,12 +161,10 @@ class _ProfileViewState extends State<ProfileView> {
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
                       onPressed: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => const ActivityTrackerView(),
-                        //   ),
-                        // );
+                        Navigator.pushNamed(
+                          context,
+                          '/edit_profile',
+                        );
                       },
                     ),
                   )
@@ -136,29 +173,29 @@ class _ProfileViewState extends State<ProfileView> {
               const SizedBox(
                 height: 15,
               ),
-              const Row(
+              Row(
                 children: [
                   Expanded(
                     child: TitleSubtitleCell(
-                      title: "180cm",
+                      title: "$height",
                       subtitle: "Height",
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 15,
                   ),
                   Expanded(
                     child: TitleSubtitleCell(
-                      title: "65kg",
+                      title: "$weight",
                       subtitle: "Weight",
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 15,
                   ),
                   Expanded(
                     child: TitleSubtitleCell(
-                      title: "22yo",
+                      title: "$age",
                       subtitle: "Age",
                     ),
                   ),
@@ -193,9 +230,9 @@ class _ProfileViewState extends State<ProfileView> {
                     ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: accountArr.length,
+                      itemCount: textarr.accountArr.length,
                       itemBuilder: (context, index) {
-                        var iObj = accountArr[index] as Map? ?? {};
+                        var iObj = textarr.accountArr[index] as Map? ?? {};
                         return SettingRow(
                           icon: iObj["image"].toString(),
                           title: iObj["name"].toString(),
@@ -251,65 +288,10 @@ class _ProfileViewState extends State<ProfileView> {
                                 ),
                               ),
                             ),
-                            CustomAnimatedToggleSwitch<bool>(
-                              current: positive,
-                              values: [false, true],
-                              dif: 0.0,
-                              indicatorSize: Size.square(30.0),
-                              animationDuration:
-                                  const Duration(milliseconds: 200),
-                              animationCurve: Curves.linear,
-                              onChanged: (b) => setState(() => positive = b),
-                              iconBuilder: (context, local, global) {
-                                return const SizedBox();
-                              },
-                              defaultCursor: SystemMouseCursors.click,
-                              onTap: () => setState(() => positive = !positive),
-                              iconsTappable: false,
-                              wrapperBuilder: (context, global, child) {
-                                return Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    Positioned(
-                                        left: 10.0,
-                                        right: 10.0,
-                                        
-                                        height: 30.0,
-                                        child: DecoratedBox(
-                                          decoration: BoxDecoration(
-                                             gradient: LinearGradient(
-                                                colors: TColor.secondaryG),
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(50.0)),
-                                          ),
-                                        )),
-                                    child,
-                                  ],
-                                );
-                              },
-                              foregroundIndicatorBuilder: (context, global) {
-                                return SizedBox.fromSize(
-                                  size: const Size(10, 10),
-                                  child: DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      color: TColor.white,
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                            color: Colors.black38,
-                                            spreadRadius: 0.05,
-                                            blurRadius: 1.1,
-                                            offset: Offset(0.0, 0.8))
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
+                            
                           ]),
                     )
+                  
                   ],
                 ),
               ),
@@ -343,9 +325,9 @@ class _ProfileViewState extends State<ProfileView> {
                       physics: const NeverScrollableScrollPhysics(),
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
-                      itemCount: otherArr.length,
+                      itemCount: textarr.otherArr.length,
                       itemBuilder: (context, index) {
-                        var iObj = otherArr[index] as Map? ?? {};
+                        var iObj = textarr.otherArr[index] as Map? ?? {};
                         return SettingRow(
                           icon: iObj["image"].toString(),
                           title: iObj["name"].toString(),
@@ -355,7 +337,55 @@ class _ProfileViewState extends State<ProfileView> {
                     )
                   ],
                 ),
-              )
+              ),
+              const SizedBox(
+                height: 25,
+              ),
+              RoundButton(
+                title: "Logout",
+                onPressed: () async {
+                  try {
+                    // Call API to logout with stored token
+                    final response = await _apiService.logoutUser();
+
+                    print(
+                        'Response status: ${response.statusCode}'); // Print status code
+                    print(
+                        'Response body: ${response.body}'); // Log the response body
+
+                    if (response.statusCode == 200) {
+                      // If logout is successful, remove token from SharedPreferences
+                      await SharedPrefService
+                          .removeToken(); // Clear token from SharedPreferences
+
+                      // Redirect user to login page
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const LoginView(), // Navigate to Login
+                        ),
+                        (route) => false, // Remove all previous routes
+                      );
+                    } else {
+                      // Show error if status code is not 200
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Đăng xuất thất bại. Mã trạng thái: ${response.statusCode}',
+                          ),
+                        ),
+                      );
+                    }
+                  } catch (error) {
+                    // Handle error when unable to connect to API or other errors
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text('Có lỗi xảy ra khi đăng xuất: $error')),
+                    );
+                  }
+                },
+              ),
             ],
           ),
         ),

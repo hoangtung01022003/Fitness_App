@@ -1,9 +1,16 @@
+import 'package:fitness/api/auth_controllers.dart';
+import 'package:fitness/api/api_service.dart';
+import 'package:fitness/api/sharedPreference.dart';
+import 'package:fitness/common/assets.dart';
 import 'package:fitness/common/colo_extension.dart';
 import 'package:fitness/common_widget/round_button.dart';
 import 'package:fitness/common_widget/round_textfield.dart';
+import 'package:fitness/common_widget/validate/validator.dart';
 import 'package:fitness/view/login/complete_profile_view.dart';
 import 'package:fitness/view/login/login_view.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -14,6 +21,54 @@ class SignUpView extends StatefulWidget {
 
 class _SignUpViewState extends State<SignUpView> {
   bool isCheck = false;
+  bool _isObscured = true; // Trạng thái hiển thị mật khẩu
+  final AuthControllers _authControllers = AuthControllers();
+
+  @override
+  void dispose() {
+    _authControllers.firstNameController.dispose();
+    _authControllers.lastNameController.dispose();
+    _authControllers.emailController.dispose();
+    _authControllers.passwordController.dispose();
+    super.dispose();
+  }
+
+  void _validateAndSubmit() {
+    String? validationError = AuthValidator.validateFirstName(
+            _authControllers.firstNameController.text) ??
+        AuthValidator.validateLastName(
+            _authControllers.lastNameController.text) ??
+        AuthValidator.validateEmail(_authControllers.emailController.text) ??
+        AuthValidator.validatePassword(
+            _authControllers.passwordController.text);
+
+    if (validationError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(validationError)),
+      );
+      return;
+    }
+
+    // Nếu tất cả đều hợp lệ, chuyển sang màn hình tiếp theo
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CompleteProfileView(
+          firstName: _authControllers.firstNameController.text,
+          lastName: _authControllers.lastNameController.text,
+          email: _authControllers.emailController.text,
+          password: _authControllers.passwordController.text,
+        ),
+      ),
+    );
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _isObscured = !_isObscured; // Chuyển đổi trạng thái hiển thị mật khẩu
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -22,7 +77,8 @@ class _SignUpViewState extends State<SignUpView> {
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20).copyWith(top: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -40,48 +96,56 @@ class _SignUpViewState extends State<SignUpView> {
                 SizedBox(
                   height: media.width * 0.05,
                 ),
-                const RoundTextField(
+                RoundTextFormField(
+                  controller: _authControllers.firstNameController,
                   hitText: "First Name",
-                  icon: "assets/img/user_text.png",
+                  icon: TImages.userText,
+
+                  // errorText: firstNameError,
                 ),
                 SizedBox(
                   height: media.width * 0.04,
                 ),
-                const RoundTextField(
+                RoundTextFormField(
+                  controller: _authControllers.lastNameController,
                   hitText: "Last Name",
-                  icon: "assets/img/user_text.png",
+                  icon: TImages.userText,
+                  // validator: ,
                 ),
                 SizedBox(
                   height: media.width * 0.04,
                 ),
-                const RoundTextField(
+                RoundTextFormField(
+                  controller: _authControllers.emailController,
                   hitText: "Email",
-                  icon: "assets/img/email.png",
+                  icon: TImages.email,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 SizedBox(
                   height: media.width * 0.04,
                 ),
-                RoundTextField(
+                RoundTextFormField(
+                  controller: _authControllers.passwordController,
                   hitText: "Password",
-                  icon: "assets/img/lock.png",
-                  obscureText: true,
+                  icon: TImages.lock,
+                  obscureText: _isObscured,
                   rigtIcon: TextButton(
-                      onPressed: () {},
+                      onPressed: _togglePasswordVisibility,
                       child: Container(
-                          alignment: Alignment.center,
-                          width: 20,
-                          height: 20,
-                          child: Image.asset(
-                            "assets/img/show_password.png",
-                            width: 20,
-                            height: 20,
-                            fit: BoxFit.contain,
-                            color: TColor.gray,
-                          ))),
+                        alignment: Alignment.center,
+                        width: 20,
+                        height: 20,
+                        child: Icon(
+                          _isObscured
+                              ? Icons
+                                  .visibility_off // Hình ảnh cho "Show" (khi mật khẩu bị ẩn)
+                              : Icons
+                                  .visibility, // Hình ảnh cho "Hide" (khi mật khẩu được hiển thị)
+                          color: Colors.grey,
+                        ),
+                      )),
                 ),
                 Row(
-                  // crossAxisAlignment: CrossAxisAlignment.,
                   children: [
                     IconButton(
                       onPressed: () {
@@ -99,20 +163,17 @@ class _SignUpViewState extends State<SignUpView> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
-                      child:  Text(
-                          "By continuing you accept our Privacy Policy and\nTerm of Use",
-                          style: TextStyle(color: TColor.gray, fontSize: 10),
-                        ),
-                     
+                      child: Text(
+                        "By continuing you accept our Privacy Policy and\nTerm of Use",
+                        style: TextStyle(color: TColor.gray, fontSize: 10),
+                      ),
                     )
                   ],
                 ),
                 SizedBox(
-                  height: media.width * 0.4,
+                  height: media.width * 0.04,
                 ),
-                RoundButton(title: "Register", onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const CompleteProfileView()  ));
-                }),
+                RoundButton(title: "Register", onPressed: _validateAndSubmit),
                 SizedBox(
                   height: media.width * 0.04,
                 ),
@@ -162,11 +223,9 @@ class _SignUpViewState extends State<SignUpView> {
                         ),
                       ),
                     ),
-
-                     SizedBox(
+                    SizedBox(
                       width: media.width * 0.04,
                     ),
-
                     GestureDetector(
                       onTap: () {},
                       child: Container(
@@ -195,7 +254,7 @@ class _SignUpViewState extends State<SignUpView> {
                 ),
                 TextButton(
                   onPressed: () {
-                     Navigator.push(
+                    Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const LoginView()));

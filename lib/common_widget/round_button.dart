@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../common/colo_extension.dart';
 
-enum RoundButtonType { bgGradient, bgSGradient , textGradient }
+enum RoundButtonType { bgGradient, bgSGradient, textGradient }
 
 class RoundButton extends StatelessWidget {
   final String title;
@@ -26,10 +26,13 @@ class RoundButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
           gradient: LinearGradient(
-              colors: type == RoundButtonType.bgSGradient ? TColor.secondaryG :  TColor.primaryG,
-              ),
+            colors: type == RoundButtonType.bgSGradient
+                ? TColor.secondaryG
+                : TColor.primaryG,
+          ),
           borderRadius: BorderRadius.circular(25),
-          boxShadow: type == RoundButtonType.bgGradient ||  type == RoundButtonType.bgSGradient 
+          boxShadow: type == RoundButtonType.bgGradient ||
+                  type == RoundButtonType.bgSGradient
               ? const [
                   BoxShadow(
                       color: Colors.black26,
@@ -43,11 +46,16 @@ class RoundButton extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
         textColor: TColor.primaryColor1,
         minWidth: double.maxFinite,
-        elevation: type == RoundButtonType.bgGradient ||  type == RoundButtonType.bgSGradient ? 0 : elevation,
-        color: type == RoundButtonType.bgGradient ||  type == RoundButtonType.bgSGradient
+        elevation: type == RoundButtonType.bgGradient ||
+                type == RoundButtonType.bgSGradient
+            ? 0
+            : elevation,
+        color: type == RoundButtonType.bgGradient ||
+                type == RoundButtonType.bgSGradient
             ? Colors.transparent
             : TColor.white,
-        child: type == RoundButtonType.bgGradient ||  type == RoundButtonType.bgSGradient 
+        child: type == RoundButtonType.bgGradient ||
+                type == RoundButtonType.bgSGradient
             ? Text(title,
                 style: TextStyle(
                     color: TColor.white,
@@ -65,7 +73,7 @@ class RoundButton extends StatelessWidget {
                 },
                 child: Text(title,
                     style: TextStyle(
-                        color:  TColor.primaryColor1,
+                        color: TColor.primaryColor1,
                         fontSize: fontSize,
                         fontWeight: fontWeight)),
               ),

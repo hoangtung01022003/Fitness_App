@@ -54,7 +54,7 @@ SizedBox(
                RoundButton(
                   title: "Go To Home",
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const MainTabView()));
