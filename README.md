@@ -22,7 +22,7 @@ Fitness App is a mobile application designed to help users track and improve the
 1. Clone the project from GitHub:
 
    ```bash
-   git clone https://github.com/your-username/fitness-app-frontend.git
+   git clone https://github.com/hoangtung01022003/Fitness_App.git
    cd fitness-app-frontend
 2. Install dependencies:
 
