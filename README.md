@@ -23,7 +23,7 @@ Fitness App is a mobile application designed to help users track and improve the
 
    ```bash
    git clone https://github.com/hoangtung01022003/Fitness_App.git
-   cd fitness-app-frontend
+   cd Fitness_App
 2. Install dependencies:
 
     ```bash
