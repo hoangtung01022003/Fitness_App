@@ -1,7 +1,8 @@
 # Fitness App Frontend
 
 Fitness App is a mobile application designed to help users track and improve their health. It is developed using Dart and Flutter, with fl_chart for data visualization and REST API integration to fetch and send user data.
-
+## Video Demo
+Link: https://drive.google.com/drive/folders/1ky_imzMmA74yAaXtP8QxYi8eayT7KrAn
 ## Key Features
 
 - **User Registration and Login:** Users can create an account and log in to track their personal health metrics.
