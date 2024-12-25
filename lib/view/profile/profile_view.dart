@@ -9,7 +9,6 @@ import '../../common/colo_extension.dart';
 import '../../common_widget/round_button.dart';
 import '../../common_widget/setting_row.dart';
 import '../../common_widget/title_subtitle_cell.dart';
-import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -46,6 +45,7 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   // Hàm để tải thông tin từ cache
+  // Hàm để tải thông tin từ cache
   Future<void> loadUserInfoFromCache() async {
     try {
       final cachedUserInfo = await SharedPrefService.getCachedUserInfo();
@@ -53,9 +53,11 @@ class _ProfileViewState extends State<ProfileView> {
         setState(() {
           fullName =
               '${cachedUserInfo['first_name'] ?? ''} ${cachedUserInfo['last_name'] ?? ''}';
-          
-          height = cachedUserInfo['height'] ?? 0.0;
-          weight = cachedUserInfo['weight'] ?? 0.0;
+
+          // Chuyển đổi giá trị 'height' và 'weight' từ double sang int
+          height = (cachedUserInfo['height'] ?? 0.0).toInt();
+          weight = (cachedUserInfo['weight'] ?? 0.0).toInt();
+
           age = calculateAge(cachedUserInfo['date_of_birth'] ?? '');
           // Các trường khác nếu cần
         });
@@ -288,10 +290,8 @@ class _ProfileViewState extends State<ProfileView> {
                                 ),
                               ),
                             ),
-                            
                           ]),
                     )
-                  
                   ],
                 ),
               ),
@@ -357,7 +357,7 @@ class _ProfileViewState extends State<ProfileView> {
                       // If logout is successful, remove token from SharedPreferences
                       await SharedPrefService
                           .removeToken(); // Clear token from SharedPreferences
-
+                      // await SharedPrefService.clearUserInfo();
                       // Redirect user to login page
                       Navigator.pushAndRemoveUntil(
                         context,

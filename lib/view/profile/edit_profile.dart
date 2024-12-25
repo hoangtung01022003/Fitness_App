@@ -185,6 +185,7 @@ class _EditProfileState extends State<EditProfile> {
                           ],
                         ),
                       ),
+                      
                       SizedBox(
                         height: media.width * 0.04,
                       ),

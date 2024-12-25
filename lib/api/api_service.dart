@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:fitness/api/sharedPreference.dart';
+import 'package:fitness/config/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 class ApiService {
   // final String tokens;
-  final String _baseUrl =
-      'http://127.0.0.1:8000/api'; // Tạo URL cơ bản dùng chung
 // ApiService(this.tokens);
+
   // Hàm lấy token
   Future<String?> _getToken() async {
     return await SharedPrefService.getToken();
@@ -33,7 +33,7 @@ class ApiService {
   Future<http.Response> loginUser(String email, String password) async {
     try {
       final response = await http.post(
-        Uri.parse('$_baseUrl/login'),
+        Uri.parse('$baseUrl/login'),
         headers: {
           'Content-Type': 'application/json', // Tiêu đề cho yêu cầu
         },
@@ -76,7 +76,7 @@ class ApiService {
 
     try {
       final response = await http.post(
-        Uri.parse('$_baseUrl/logout'),
+        Uri.parse('$baseUrl/logout'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Thêm Content-Type
@@ -110,7 +110,7 @@ class ApiService {
   ) async {
     try {
       final response = await http.post(
-        Uri.parse('$_baseUrl/register'), // Sử dụng endpoint đăng ký
+        Uri.parse('$baseUrl/register'), // Sử dụng endpoint đăng ký
         headers: await _getHeaders(), // Không cần token cho đăng ký
         body: jsonEncode({
           'first_name': firstName,
@@ -155,7 +155,7 @@ class ApiService {
       // Gửi yêu cầu HTTP GET tới endpoint API để lấy thông tin người dùng
       final response = await http.get(
         Uri.parse(
-            '$_baseUrl/user/profile'), // Đảm bảo endpoint này đúng với API của bạn
+            '$baseUrl/user/profile'), // Đảm bảo endpoint này đúng với API của bạn
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -189,7 +189,7 @@ class ApiService {
   }
 
   Future<bool> updateUserInfo(Map<String, dynamic> updatedData) async {
-    final url = Uri.parse('$_baseUrl/user/profile/update');
+    final url = Uri.parse('$baseUrl/user/profile/update');
     try {
       // Lấy token từ SharedPreferences
       final token = await SharedPrefService.getToken();

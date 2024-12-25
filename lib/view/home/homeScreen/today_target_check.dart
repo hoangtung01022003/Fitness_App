@@ -1,5 +1,6 @@
 import 'package:fitness/common/colo_extension.dart';
 import 'package:fitness/common_widget/round_button.dart';
+import 'package:fitness/view/home/activity_tracker/today_target.dart';
 import 'package:fitness/view/home/activity_tracker_view.dart';
 import 'package:flutter/material.dart';
 
@@ -11,8 +12,7 @@ class TodayTargetCheck extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding:
-          const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
       decoration: BoxDecoration(
         color: TColor.primaryColor2.withOpacity(0.3),
         borderRadius: BorderRadius.circular(15),
@@ -23,9 +23,7 @@ class TodayTargetCheck extends StatelessWidget {
           Text(
             "Today Target",
             style: TextStyle(
-                color: TColor.black,
-                fontSize: 14,
-                fontWeight: FontWeight.w700),
+                color: TColor.black, fontSize: 14, fontWeight: FontWeight.w700),
           ),
           SizedBox(
             width: 70,
@@ -39,8 +37,7 @@ class TodayTargetCheck extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        const ActivityTrackerView(),
+                    builder: (context) => TodayTarget(),
                   ),
                 );
               },

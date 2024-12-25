@@ -3,6 +3,7 @@ import 'package:fitness/api/api_service.dart';
 import 'package:fitness/common/assets.dart';
 import 'package:fitness/common/colo_extension.dart';
 import 'package:fitness/common_widget/date/date_year.dart';
+import 'package:fitness/common_widget/loading_helper.dart';
 import 'package:fitness/common_widget/validate/validator.dart';
 import 'package:fitness/view/login/what_your_goal_view.dart';
 import 'package:flutter/material.dart';
@@ -225,11 +226,14 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
                       RoundButton(
                         title: "Next >",
                         onPressed: () async {
+                          // Hiển thị loading
+                          LoadingHelper.showLoadingOverlay(context);
+
                           // Lấy thông tin từ các TextEditingController
                           String gender =
                               _profileControllers.genderController.text;
-                          String dateOfBirthString = _profileControllers
-                              .dateController.text; // Để nhập từ người dùng
+                          String dateOfBirthString =
+                              _profileControllers.dateController.text;
                           String heightString =
                               _profileControllers.heightController.text;
                           String weightString =
@@ -246,16 +250,10 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
                               const SnackBar(
                                   content: Text('Ngày sinh không hợp lệ.')),
                             );
+                            LoadingHelper
+                                .hideLoadingOverlay(); // Ẩn loading nếu có lỗi
                             return;
                           }
-                          print(widget.firstName);
-                          print(widget.lastName);
-                          print(widget.email);
-                          print(widget.password);
-                          print(gender);
-                          print(dateOfBirthString);
-                          print(heightString);
-                          print(weightString);
 
                           // Chuyển đổi chiều cao và cân nặng từ String sang double
                           double? height = double.tryParse(heightString);
@@ -275,10 +273,11 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
                               AuthValidator.validatePassword(widget.password);
 
                           if (validationError != null) {
-                            // Nếu có lỗi, hiển thị thông báo lỗi
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(validationError)),
                             );
+                            LoadingHelper
+                                .hideLoadingOverlay(); // Ẩn loading nếu có lỗi validate
                             return;
                           }
 
@@ -291,9 +290,9 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
                               widget.email,
                               widget.password,
                               gender,
-                              dateOfBirthString, // Chuyển đổi DateTime thành String
-                              height!, // Chắc chắn không phải null vì đã validate
-                              weight!, // Chắc chắn không phải null vì đã validate
+                              dateOfBirthString,
+                              weight!,
+                              height!,
                             );
 
                             // Nếu thành công, chuyển sang màn hình tiếp theo
@@ -304,13 +303,16 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
                               ),
                             );
                           } catch (error) {
-                            print('Đăng ký không thành công: $error');
                             // Xử lý lỗi khi đăng ký thất bại
+                            print('Đăng ký không thành công: $error');
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                   content:
                                       Text('Đăng ký không thành công: $error')),
                             );
+                          } finally {
+                            // Ẩn loading sau khi hoàn tất
+                            LoadingHelper.hideLoadingOverlay();
                           }
                         },
                       ),

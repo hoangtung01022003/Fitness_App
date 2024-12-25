@@ -1,4 +1,11 @@
+import 'dart:io';
+
+import 'package:fitness/api/sharedPreference.dart';
+import 'package:fitness/view/photo_progress/camera_view.dart';
+import 'package:fitness/view/photo_progress/gallery_image/gallery_images.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common/colo_extension.dart';
 import '../../common_widget/round_button.dart';
@@ -12,30 +19,37 @@ class PhotoProgressView extends StatefulWidget {
 }
 
 class _PhotoProgressViewState extends State<PhotoProgressView> {
-  List photoArr = [
-    {
-      "time": "2 June",
-      "photo": [
-        "assets/img/pp_1.png",
-        "assets/img/pp_2.png",
-        "assets/img/pp_3.png",
-        "assets/img/pp_4.png",
-      ]
-    },
-    {
-      "time": "5 May",
-      "photo": [
-        "assets/img/pp_5.png",
-        "assets/img/pp_6.png",
-        "assets/img/pp_7.png",
-        "assets/img/pp_8.png",
-      ]
-    }
-  ];
+  Future<void> deleteAllImages() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> savedImagePaths = prefs.getStringList('saved_image_paths') ?? [];
 
+    // Lấy đường dẫn thư mục tài liệu của thiết bị
+    final directory = await getApplicationDocumentsDirectory();
+    
+    // Duyệt qua tất cả các ảnh đã lưu và xóa chúng
+    for (var imagePath in savedImagePaths) {
+      final imageData = imagePath.split(',');
+      final filePath = imageData[0]; // Đường dẫn ảnh
+      final file = File(filePath);
+
+      // Kiểm tra nếu tệp tin tồn tại thì xóa
+      if (await file.exists()) {
+        await file.delete();
+        print('Đã xóa ảnh: $filePath');
+      }
+    }
+
+    // Xóa danh sách đường dẫn ảnh trong SharedPreferences
+    await prefs.remove('saved_image_paths');
+    print('Đã xóa tất cả đường dẫn ảnh trong SharedPreferences.');
+
+  } catch (e) {
+    print('Lỗi khi xóa ảnh: $e');
+  }}
   @override
   Widget build(BuildContext context) {
-    var media = MediaQuery.of(context).size;
+    var media = (MediaQuery.of(context).size);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: TColor.white,
@@ -179,7 +193,7 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                             ]),
                         Image.asset(
                           "assets/img/progress_each_photo.png",
-                          width: media.width * 0.35,
+                          width: media.width * 0.30,
                         )
                       ],
                     ),
@@ -218,8 +232,7 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    const ComparisonView(),
+                                builder: (context) => const ComparisonView(),
                               ),
                             );
                           },
@@ -229,8 +242,8 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                   ),
                 ),
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(
+                      /*vertical: 10,*/ horizontal: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -250,75 +263,25 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                     ],
                   ),
                 ),
-                ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: photoArr.length,
-                    itemBuilder: ((context, index) {
-                      var pObj = photoArr[index] as Map? ?? {};
-                      var imaArr = pObj["photo"] as List? ?? [];
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              pObj["time"].toString(),
-                              style:
-                                  TextStyle(color: TColor.gray, fontSize: 12),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 100,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              padding: EdgeInsets.zero,
-                              itemCount: imaArr.length,
-                              itemBuilder: ((context, indexRow) {
-                                return Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(horizontal: 4),
-                                  width: 100,
-                                  decoration: BoxDecoration(
-                                    color: TColor.lightGray,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Image.asset(
-                                      imaArr[indexRow] as String? ?? "",
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                );
-                              }),
-                            ),
-                          ),
-                        ],
-                      );
-                    }))
+                const GalleryImages(),
               ],
             ),
             SizedBox(
-              height: media.width * 0.05,
+              height: media.width * 0.3,
             ),
           ],
         ),
       ),
       floatingActionButton: InkWell(
         onTap: () {
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => SleepAddAlarmView(
-          //       date: _selectedDateAppBBar,
-          //     ),
-          //   ),
-          // );
+          // deleteAllImages();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CameraScreen(),
+              // date: _selectedDateAppBBar,
+            ),
+          );
         },
         child: Container(
           width: 55,

@@ -112,7 +112,7 @@ class _HomeViewState extends State<HomeView> {
                     children: [
                       Expanded(
                         child: Container(
-                          height: media.width * 0.95,
+                          height: media.width * 1.02,
                           padding: const EdgeInsets.symmetric(
                               vertical: 25, horizontal: 20),
                           decoration: BoxDecoration(
@@ -147,7 +147,7 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       ),
                       SizedBox(
-                        width: media.width * 0.05,
+                        width: media.width * 0.05
                       ),
                       Expanded(
                           child: Column(

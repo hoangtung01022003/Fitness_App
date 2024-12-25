@@ -1,7 +1,9 @@
 import 'package:fitness/common/colo_extension.dart';
 import 'package:fitness/common_widget/icon_title_next_row.dart';
 import 'package:fitness/common_widget/round_button.dart';
+import 'package:fitness/common_widget/values/workout_tracker/fullbody_workout.dart';
 import 'package:fitness/view/workout_tracker/exercises_stpe_details.dart';
+import 'package:fitness/view/workout_tracker/time_screen.dart';
 import 'package:fitness/view/workout_tracker/workout_schedule_view.dart';
 import 'package:flutter/material.dart';
 
@@ -16,72 +18,23 @@ class WorkoutDetailView extends StatefulWidget {
 }
 
 class _WorkoutDetailViewState extends State<WorkoutDetailView> {
-  List latestArr = [
-    {
-      "image": "assets/img/Workout1.png",
-      "title": "Fullbody Workout",
-      "time": "Today, 03:00pm"
-    },
-    {
-      "image": "assets/img/Workout2.png",
-      "title": "Upperbody Workout",
-      "time": "June 05, 02:00pm"
-    },
-  ];
+  late FullbodyWorkout _fullbodyWorkout;
+
+  @override
+  void initState() {
+    super.initState();
+    _fullbodyWorkout = FullbodyWorkout(); // Khởi tạo biến trước khi sử dụng
+  }
+
+  int _convertDurationToSeconds(String duration) {
+    List<String> parts = duration.split(':');
+    return (int.parse(parts[0]) * 60) + int.parse(parts[1]);
+  }
 
   List youArr = [
     {"image": "assets/img/barbell.png", "title": "Barbell"},
     {"image": "assets/img/skipping_rope.png", "title": "Skipping Rope"},
-    {"image": "assets/img/bottle.png", "title": "Bottle 1 Liters"},
-  ];
-
-  List exercisesArr = [
-    {
-      "name": "Set 1",
-      "set": [
-        {"image": "assets/img/img_1.png", "title": "Warm Up", "value": "05:00"},
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Jumping Jack",
-          "value": "12x"
-        },
-        {"image": "assets/img/img_1.png", "title": "Skipping", "value": "15x"},
-        {"image": "assets/img/img_2.png", "title": "Squats", "value": "20x"},
-        {
-          "image": "assets/img/img_1.png",
-          "title": "Arm Raises",
-          "value": "00:53"
-        },
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Rest and Drink",
-          "value": "02:00"
-        },
-      ],
-    },
-    {
-      "name": "Set 2",
-      "set": [
-        {"image": "assets/img/img_1.png", "title": "Warm Up", "value": "05:00"},
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Jumping Jack",
-          "value": "12x"
-        },
-        {"image": "assets/img/img_1.png", "title": "Skipping", "value": "15x"},
-        {"image": "assets/img/img_2.png", "title": "Squats", "value": "20x"},
-        {
-          "image": "assets/img/img_1.png",
-          "title": "Arm Raises",
-          "value": "00:53"
-        },
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Rest and Drink",
-          "value": "02:00"
-        },
-      ],
-    }
+    {"image": "assets/img/bottle.png", "title": "Bottle 1 Liter"},
   ];
 
   @override
@@ -225,8 +178,11 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
                           time: "5/27, 09:00 AM",
                           color: TColor.primaryColor2.withOpacity(0.3),
                           onPressed: () {
-
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const WorkoutScheduleView() )  );
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const WorkoutScheduleView()));
                           }),
                       SizedBox(
                         height: media.width * 0.02,
@@ -330,9 +286,11 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
                           padding: EdgeInsets.zero,
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount: exercisesArr.length,
+                          itemCount: _fullbodyWorkout.exercisesArr.length,
                           itemBuilder: (context, index) {
-                            var sObj = exercisesArr[index] as Map? ?? {};
+                            var sObj =
+                                _fullbodyWorkout.exercisesArr[index] as Map? ??
+                                    {};
                             return ExercisesSetSection(
                               sObj: sObj,
                               onPressed: (obj) {
@@ -358,7 +316,30 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      RoundButton(title: "Start Workout", onPressed: () {})
+                      RoundButton(
+                          title: "Start Workout",
+                          onPressed: () {
+                            // Bắt đầu với Set đầu tiên và bài tập đầu tiên trong Set đó
+                            String workoutName =
+                                _fullbodyWorkout.exercisesArr[0]["set"][0]
+                                    ["title"]; // Tên bài tập đầu tiên
+                            String durationString = _fullbodyWorkout
+                                    .exercisesArr[0]["set"][0]["duration"] ??
+                                _fullbodyWorkout.exercisesArr[0]["set"][0][
+                                    "value"]; // Lấy thời gian từ trường duration hoặc value
+                            int goalTime = _convertDurationToSeconds(
+                                durationString); // Chuyển đổi thời gian sang giây
+
+                            // Chuyển đến màn hình WorkoutTimerScreen và truyền dữ liệu
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => WorkoutTimerScreen(
+                                  exercises: _fullbodyWorkout.exercisesArr,
+                                ),
+                              ),
+                            );
+                          })
                     ],
                   ),
                 )

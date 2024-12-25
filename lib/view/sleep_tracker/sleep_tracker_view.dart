@@ -220,11 +220,11 @@ class _SleepTrackerViewState extends State<SleepTrackerView> {
                         ),
                       )),
                   SizedBox(
-                    height: media.width * 0.05,
+                    height: media.width * 0.02,
                   ),
                   Container(
                     width: double.maxFinite,
-                    height: media.width * 0.4,
+                    height: media.width * 0.01,
                     decoration: BoxDecoration(
                         gradient: LinearGradient(colors: TColor.primaryG),
                         borderRadius: BorderRadius.circular(20)),

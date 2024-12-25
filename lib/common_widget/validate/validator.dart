@@ -69,3 +69,65 @@ class ProfileValidator {
     return null;
   }
 }
+
+class TargetValidator {
+  // Kiểm tra loại mục tiêu
+  static String? validateGoalType(String? goalType) {
+    if (goalType == null || goalType.isEmpty) {
+      return 'Goal type cannot be empty';
+    }
+    List<String> validGoalTypes = [
+      'Lose Weight',
+      'Height Increase',
+      'Muscle Mass Increase',
+      'Abs'
+    ];
+    if (!validGoalTypes.contains(goalType)) {
+      return 'Invalid goal type. Please choose from "Lose Weight", "Height Increase", "Muscle Mass Increase", "Abs"';
+    }
+    return null;
+  }
+
+  // Kiểm tra giá trị mục tiêu (target_value)
+  static String? validateTargetValue(double? targetValue) {
+    if (targetValue == null || targetValue <= 0) {
+      return 'Target value cannot be empty';
+    }
+    return null;
+  }
+
+  // Kiểm tra đơn vị (unit)
+  static String? validateUnit(String? unit) {
+    if (unit == null || unit.isEmpty) {
+      return 'Unit value cannot be empty';
+    }
+    return null; // Nếu hợp lệ, trả về null
+  }
+
+  // Kiểm tra ngày bắt đầu (start_date)
+  static String? validateStartDate(DateTime? startDate) {
+    if (startDate == null) {
+      return 'Start target value cannot be empty';
+    }
+    // double? value = double.tryParse(startDate);
+    if (startDate.isBefore(DateTime.now())) {
+      return 'Start date must be today or later';
+    }
+    return null;
+  }
+
+  // Kiểm tra ngày mục tiêu (target_date)
+  static String? validateTargetDate(DateTime? startDate, DateTime? targetDate) {
+    if (targetDate == null) {
+      return 'Target date cannot be empty';
+    }
+    try {
+      if (targetDate.isBefore(startDate!)) {
+        return 'Target date must be later than start date';
+      }
+    } catch (e) {
+      return 'Invalid target date format';
+    }
+    return null;
+  }
+}

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:fitness/api/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefService {
@@ -117,5 +119,70 @@ class SharedPrefService {
       }
     }
     return null; // Trả về null nếu không tính được
+  }
+
+  static Future<void> saveCalories(int calories) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Lấy tổng số calo đã lưu
+    int totalCalories = prefs.getInt('totalCalories') ?? 0;
+
+    // Cộng dồn calo mới vào tổng
+    totalCalories += calories;
+
+    // Lưu tổng số calo vào SharedPreferences
+    await prefs.setInt('totalCalories', totalCalories);
+
+    // In ra log để kiểm tra
+    print("Calories saved: $calories");
+    print("New total calories: $totalCalories");
+  }
+
+  // Lấy tổng số calo từ SharedPreferences
+  static Future<int> getCalories() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Trả về tổng số calo đã lưu
+    return prefs.getInt('totalCalories') ?? 0;
+  }
+
+//image
+  static Future<void> saveImagePathWithTimestamp(
+      List<String> imageFileNames) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+
+      final timestamp = DateFormat('yyyy-MM-dd')
+          .format(DateTime.now()); // Lưu ngày và giờ
+
+      List<Map<String, String>> imageData = imageFileNames.map((fileName) {
+        return {
+          'path': '${directory.path}/$fileName', // Đường dẫn ảnh
+          'timestamp': timestamp, // Lưu thời gian chụp
+        };
+      }).toList();
+
+      // Lưu danh sách ảnh và thời gian tương ứng vào SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      List<String> imageStrings = imageData
+          .map((data) => '${data['path']},${data['timestamp']}')
+          .toList();
+      await prefs.setStringList('saved_image_paths', imageStrings);
+      print("Lưu ảnh thành công: $imageStrings");
+    } catch (e) {
+      print("Lỗi khi lưu danh sách đường dẫn ảnh: $e");
+    }
+  }
+
+  static const String savedImagesKey = 'saved_images';
+  // Lấy đường dẫn ảnh
+  static Future<List<String>> getSavedImagePaths() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getStringList(savedImagesKey) ?? [];
+    } catch (e) {
+      print('Lỗi khi lấy danh sách đường dẫn ảnh: $e');
+      return [];
+    }
   }
 }

@@ -1,5 +1,4 @@
 // app_router.dart
-import 'package:fitness/view/login/complete_profile_view.dart';
 import 'package:fitness/view/login/login_view.dart';
 import 'package:fitness/view/main_tab/main_tab_view.dart';
 import 'package:fitness/view/on_boarding/on_boarding_view.dart';

@@ -3,6 +3,7 @@ import 'package:fitness/api/api_service.dart';
 import 'package:fitness/api/sharedPreference.dart';
 import 'package:fitness/common/assets.dart';
 import 'package:fitness/common/colo_extension.dart';
+import 'package:fitness/common_widget/loading_helper.dart';
 import 'package:fitness/common_widget/round_button.dart';
 import 'package:fitness/common_widget/round_textfield.dart';
 import 'package:fitness/view/login/signup_view.dart';
@@ -118,7 +119,11 @@ class _LoginViewState extends State<LoginView> {
                 RoundButton(
                   title: "Login",
                   onPressed: () async {
+                    // Hiển thị loading
+                    LoadingHelper.showLoadingOverlay(context);
+
                     try {
+                      // Gọi hàm đăng nhập từ ApiService với email và password từ controller
                       final response = await _authService.loginUser(
                         _authControllers.emailController.text,
                         _authControllers.passwordController.text,
@@ -133,6 +138,7 @@ class _LoginViewState extends State<LoginView> {
                         final token = await SharedPrefService.getToken();
                         print('Token lấy từ SharedPreferences: $token');
 
+                        // Chuyển tới trang Welcome sau khi đăng nhập thành công
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
@@ -140,19 +146,25 @@ class _LoginViewState extends State<LoginView> {
                           ),
                         );
                       } else {
+                        // Hiển thị lỗi nếu đăng nhập thất bại
                         final errorData = jsonDecode(response.body);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                              content: Text(
-                                  'Đăng nhập thất bại: ${errorData['error'] ?? 'Vui lòng thử lại.'}')),
+                            content: Text(
+                                'Đăng nhập thất bại: ${errorData['error'] ?? 'Vui lòng thử lại.'}'),
+                          ),
                         );
                       }
                     } catch (error) {
+                      LoadingHelper.hideLoadingOverlay();
                       print("Có lỗi xảy ra. Vui lòng thử lại: $error");
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content: Text('Có lỗi xảy ra. Vui lòng thử lại.')),
+                            content: Text('Có lỗi xảy ra. Vui lòng thử lại. ')),
                       );
+                    } finally {
+                      // Ẩn loading sau khi quá trình xử lý hoàn tất
+                      LoadingHelper.hideLoadingOverlay();
                     }
                   },
                 ),

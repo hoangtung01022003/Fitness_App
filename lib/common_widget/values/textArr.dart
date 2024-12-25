@@ -14,6 +14,27 @@ class Textarr {
     },
   ];
 
+  List photoArr = [
+    {
+      "time": "2 June",
+      "photo": [
+        "assets/img/pp_1.png",
+        "assets/img/pp_2.png",
+        "assets/img/pp_3.png",
+        "assets/img/pp_4.png",
+      ]
+    },
+    {
+      "time": "5 May",
+      "photo": [
+        "assets/img/pp_5.png",
+        "assets/img/pp_6.png",
+        "assets/img/pp_7.png",
+        "assets/img/pp_8.png",
+      ]
+    }
+  ];
+
   List accountArr = [
     {"image": "assets/img/p_personal.png", "name": "Personal Data", "tag": "1"},
     {"image": "assets/img/p_achi.png", "name": "Achievement", "tag": "2"},
@@ -58,7 +79,7 @@ class Textarr {
       "progress": 0.7
     },
   ];
-  
+
   List waterArr = [
     {"title": "6am - 8am", "subtitle": "600ml"},
     {"title": "9am - 11am", "subtitle": "500ml"},

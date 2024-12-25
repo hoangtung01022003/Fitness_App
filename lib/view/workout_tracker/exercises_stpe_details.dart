@@ -1,3 +1,4 @@
+import 'package:fitness/common_widget/values/workout_tracker/fullbody_workout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:readmore/readmore.dart';
@@ -15,32 +16,13 @@ class ExercisesStepDetails extends StatefulWidget {
 }
 
 class _ExercisesStepDetailsState extends State<ExercisesStepDetails> {
-  List stepArr = [
-    {
-      "no": "01",
-      "title": "Spread Your Arms",
-      "detail":
-          "To make the gestures feel more relaxed, stretch your arms as you start this movement. No bending of hands."
-    },
-    {
-      "no": "02",
-      "title": "Rest at The Toe",
-      "detail":
-          "The basis of this movement is jumping. Now, what needs to be considered is that you have to use the tips of your feet"
-    },
-    {
-      "no": "03",
-      "title": "Adjust Foot Movement",
-      "detail":
-          "Jumping Jack is not just an ordinary jump. But, you also have to pay close attention to leg movements."
-    },
-    {
-      "no": "04",
-      "title": "Clapping Both Hands",
-      "detail":
-          "This cannot be taken lightly. You see, without realizing it, the clapping of your hands helps you to keep your rhythm while doing the Jumping Jack"
-    },
-  ];
+  late FullbodyWorkout fullbodyWorkout;
+
+  @override
+  void initState() {
+    super.initState();
+    fullbodyWorkout = FullbodyWorkout(); // Khởi tạo biến trước khi sử dụng
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +176,7 @@ class _ExercisesStepDetailsState extends State<ExercisesStepDetails> {
                   TextButton(
                     onPressed: () {},
                     child: Text(
-                      "${stepArr.length} Sets",
+                      "${fullbodyWorkout.stepArr.length} Sets",
                       style: TextStyle(color: TColor.gray, fontSize: 12),
                     ),
                   )
@@ -203,13 +185,13 @@ class _ExercisesStepDetailsState extends State<ExercisesStepDetails> {
               ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                itemCount: stepArr.length,
+                itemCount: fullbodyWorkout.stepArr.length,
                 itemBuilder: ((context, index) {
-                  var sObj = stepArr[index] as Map? ?? {};
+                  var sObj = fullbodyWorkout.stepArr[index] as Map? ?? {};
 
                   return StepDetailRow(
                     sObj: sObj,
-                    isLast: stepArr.last == sObj,
+                    isLast: fullbodyWorkout.stepArr.last == sObj,
                   );
                 }),
               ),
@@ -229,7 +211,8 @@ class _ExercisesStepDetailsState extends State<ExercisesStepDetails> {
                     height: 40,
                     decoration: BoxDecoration(
                       border: Border(
-                        top: BorderSide(color: TColor.gray.withOpacity(0.2), width: 1),
+                        top: BorderSide(
+                            color: TColor.gray.withOpacity(0.2), width: 1),
                         bottom: BorderSide(
                             color: TColor.gray.withOpacity(0.2), width: 1),
                       ),

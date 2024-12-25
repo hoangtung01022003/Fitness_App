@@ -13,7 +13,7 @@ class Sleep extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.maxFinite,
-      height: media.width * 0.45,
+      height: media.width * 0.475,
       padding: const EdgeInsets.symmetric(
           vertical: 25, horizontal: 20),
       decoration: BoxDecoration(

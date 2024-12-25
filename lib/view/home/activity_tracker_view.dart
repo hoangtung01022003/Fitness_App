@@ -91,7 +91,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                   ]),
                   borderRadius: BorderRadius.circular(15),
                 ),
-                child: const TodayTarget(),
+                child: TodayTarget(),
               ),
               SizedBox(
                 height: media.width * 0.1,

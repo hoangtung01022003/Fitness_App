@@ -1,4 +1,6 @@
 import 'package:fitness/common/colo_extension.dart';
+import 'package:fitness/common_widget/values/workout_tracker/fullbody_workout.dart';
+
 import 'package:fitness/view/workout_tracker/workour_detail_view.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -15,39 +17,13 @@ class WorkoutTrackerView extends StatefulWidget {
 }
 
 class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
-  List latestArr = [
-    {
-      "image": "assets/img/Workout1.png",
-      "title": "Fullbody Workout",
-      "time": "Today, 03:00pm"
-    },
-    {
-      "image": "assets/img/Workout2.png",
-      "title": "Upperbody Workout",
-      "time": "June 05, 02:00pm"
-    },
-  ];
+  late FullbodyWorkout _fullbodyWorkout;
 
-  List whatArr = [
-    {
-      "image": "assets/img/what_1.png",
-      "title": "Fullbody Workout",
-      "exercises": "11 Exercises",
-      "time": "32mins"
-    },
-    {
-      "image": "assets/img/what_2.png",
-      "title": "Lowebody Workout",
-      "exercises": "12 Exercises",
-      "time": "40mins"
-    },
-    {
-      "image": "assets/img/what_3.png",
-      "title": "AB Workout",
-      "exercises": "14 Exercises",
-      "time": "20mins"
-    }
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fullbodyWorkout = FullbodyWorkout(); // Khởi tạo biến trước khi sử dụng
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -314,9 +290,10 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
                       padding: EdgeInsets.zero,
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: latestArr.length,
+                      itemCount: _fullbodyWorkout.latestArr.length,
                       itemBuilder: (context, index) {
-                        var wObj = latestArr[index] as Map? ?? {};
+                        var wObj =
+                            _fullbodyWorkout.latestArr[index] as Map? ?? {};
                         return UpcomingWorkoutRow(wObj: wObj);
                       }),
                   SizedBox(
@@ -338,14 +315,20 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
                       padding: EdgeInsets.zero,
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: whatArr.length,
+                      itemCount: _fullbodyWorkout.whatArr.length,
                       itemBuilder: (context, index) {
-                        var wObj = whatArr[index] as Map? ?? {};
+                        var wObj =
+                            _fullbodyWorkout.whatArr[index] as Map? ?? {};
                         return InkWell(
-                          onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) =>  WorkoutDetailView( dObj: wObj, ) ));
-                          },
-                          child:  WhatTrainRow(wObj: wObj) );
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => WorkoutDetailView(
+                                            dObj: wObj,
+                                          )));
+                            },
+                            child: WhatTrainRow(wObj: wObj));
                       }),
                   SizedBox(
                     height: media.width * 0.1,
