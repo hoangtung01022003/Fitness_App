@@ -1,4 +1,6 @@
-const String baseUrl = 'https://db8e-42-1-90-218.ngrok-free.app/api';
+// const String baseUrl = 'https://db8e-42-1-90-218.ngrok-free.app/api';
+const String baseUrl = 'http://127.0.0.1:8001/api';
+
 
 // // const String baseUrl = 'https://ec0f-113-160-225-129.ngrok-free.app/api';
 // class ApiGemini {

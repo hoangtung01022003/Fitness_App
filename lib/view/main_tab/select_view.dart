@@ -1,11 +1,8 @@
 import 'package:fitness/common_widget/round_button.dart';
-import 'package:fitness/providers/chat_provider.dart';
 import 'package:fitness/view/meal_planner/meal_planner_view.dart';
 import 'package:fitness/view/workout_ai/generate_workout_plan_screen.dart';
 import 'package:fitness/view/workout_tracker/workout_tracker_view.dart';
 import 'package:flutter/material.dart';
-import 'package:fitness/view/chatAI/chat_screen.dart';
-import 'package:provider/provider.dart';
 
 import '../sleep_tracker/sleep_tracker_view.dart';
 
